@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/events"
+        android:title="Events"
+        android:icon="@drawable/icon_list_light"/>
+    <item
+        android:id="@+id/statistic"
+        android:title="Statistic"
+        android:icon="@drawable/icon_statistic_light"/>
+
+    <item
+        android:id="@+id/profile"
+        android:title="Profile"
+        android:icon="@drawable/icon_user_light"/>
+</menu>

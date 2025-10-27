@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/log_in_container"
+    android:background="@color/main_color_background">
+
+    <ImageView
+        android:id="@+id/user_logo"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="100dp"
+        android:src="@drawable/user_image"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+    </ImageView>
+    <TextView
+        android:id="@+id/text_registration"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_marginTop="50dp"
+        android:textSize="30sp"
+        android:textColor="@color/dark_pink"
+        android:gravity="center"
+        android:fontFamily="@font/roboto"
+        android:text="Авторизация"
+        app:layout_constraintTop_toBottomOf="@+id/user_logo"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+
+        >
+
+
+    </TextView>
+    <androidx.appcompat.widget.AppCompatEditText
+        android:id="@+id/email_logIn"
+        android:background="@drawable/disign_edit_text"
+        android:layout_marginTop="50dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginEnd="32dp"
+        android:ems="12"
+        android:inputType="textEmailAddress"
+        android:hint="Email"
+        android:textColorHint="@color/color_hint"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:paddingHorizontal="20dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/text_registration"
+        >
+
+    </androidx.appcompat.widget.AppCompatEditText>
+
+    <androidx.appcompat.widget.AppCompatEditText
+        android:id="@+id/password_LogIn"
+        android:background="@drawable/disign_edit_text"
+        android:layout_marginTop="20dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginEnd="32dp"
+        android:ems="12"
+        android:inputType="textPassword"
+        android:hint="Password"
+        android:textColorHint="@color/color_hint"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:paddingHorizontal="20dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/email_logIn"
+        />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/button_log_in"
+        android:background="@drawable/disign_button"
+        android:layout_marginTop="20dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginEnd="32dp"
+        android:ems="12"
+        android:inputType="text"
+        android:text="Войти"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:textSize="18sp"
+        android:gravity="center"
+        android:textColorHint="@color/main_color_background"
+        android:textColor="#99FFFFFF"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/password_LogIn"
+        >
+
+    </androidx.appcompat.widget.AppCompatButton>
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/button_sign_up"
+        android:background="@drawable/disign_button"
+        android:layout_marginTop="20dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginEnd="32dp"
+        android:ems="12"
+        android:inputType="text"
+        android:text="Зарегистрироваться"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:textSize="18sp"
+        android:gravity="center"
+        android:textColor="#99FFFFFF"
+        android:textColorHint="@color/main_color_background"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/button_log_in"
+        >
+
+    </androidx.appcompat.widget.AppCompatButton>
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/scanner"
+        android:background="@drawable/disign_button"
+        android:layout_marginBottom="20dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginEnd="32dp"
+        android:ems="12"
+        android:inputType="text"
+        android:text="Сканировать QR-код"
+        android:textColorHint="@color/main_color_background"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:textSize="18sp"
+        android:gravity="center"
+        android:textColor="#99FFFFFF"
+        android:fontFamily="@font/roboto"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        >
+
+    </androidx.appcompat.widget.AppCompatButton>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

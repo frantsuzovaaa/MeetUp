@@ -7,9 +7,7 @@ plugins {
 
 android {
     namespace = "com.example.meetup"
-    compileSdk {
-        version = release(36)
-    }
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.example.meetup"
@@ -34,6 +32,9 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+    buildFeatures{
+        viewBinding = true
+    }
 }
 
 dependencies {
@@ -41,10 +42,17 @@ dependencies {
     implementation(libs.material)
     implementation(libs.activity)
     implementation(libs.constraintlayout)
+    implementation(libs.core)
     implementation(libs.firebase.analytics)
+    implementation(libs.firebase.auth)
+    implementation(libs.credentials)
+    implementation(libs.credentials.play.services.auth)
+    implementation(libs.googleid)
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
+    implementation("com.google.firebase:firebase-auth:24.0.1")
+    implementation("com.google.firebase:firebase-database:22.0.1")
     implementation(platform("com.google.firebase:firebase-bom:34.4.0"))
     implementation("com.google.firebase:firebase-analytics")
 }

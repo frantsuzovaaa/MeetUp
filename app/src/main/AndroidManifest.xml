@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:allowBackup="true"
@@ -12,8 +13,17 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MeetUp.Launch">
         <activity
+            android:name=".AccountActivity"
+            android:exported="false" />
+
+        <property
+            android:name="android.window.PROPERTY_COMPAT_ALLOW_RESTRICTED_RESIZABILITY"
+            android:value="true" />
+
+        <activity
             android:name=".SplashActivity"
-            android:exported="true">
+            android:exported="true"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -22,7 +32,8 @@
         </activity>
         <activity
             android:name=".RoleSelectionActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:screenOrientation="portrait" />
     </application>
 
 </manifest>

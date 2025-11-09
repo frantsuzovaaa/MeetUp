@@ -1,4 +1,4 @@
-package com.example.meetup;
+package com.example.meetup.login;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -6,7 +6,6 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatButton;
-import androidx.appcompat.widget.AppCompatEditText;
 import androidx.fragment.app.Fragment;
 
 import android.util.Log;
@@ -16,6 +15,9 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.example.meetup.AccountActivity;
+import com.example.meetup.R;
+import com.example.meetup.signup.SignUpFragment;
 import com.example.meetup.databinding.FragmentLogInBinding;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;

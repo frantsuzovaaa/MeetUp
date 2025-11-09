@@ -13,8 +13,15 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MeetUp.Launch">
         <activity
-            android:name=".AccountActivity"
+            android:name=".info_event"
             android:exported="false" />
+        <activity
+            android:name=".ScannerActivity"
+            android:exported="false" />
+
+        <meta-data
+            android:name="com.google.mlkit.vision.DEPENDENCIES"
+            android:value="barcode" />
 
         <property
             android:name="android.window.PROPERTY_COMPAT_ALLOW_RESTRICTED_RESIZABILITY"
@@ -23,6 +30,14 @@
         <activity
             android:name=".SplashActivity"
             android:exported="true"
+            android:screenOrientation="portrait"></activity>
+        <activity
+            android:name=".RoleSelectionActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".AccountActivity"
+            android:exported="true"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -30,10 +45,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".RoleSelectionActivity"
-            android:exported="false"
-            android:screenOrientation="portrait" />
     </application>
 
 </manifest>

@@ -3,7 +3,6 @@ package com.example.meetup;
 
 import android.os.Bundle;
 import android.view.View;
-import android.widget.EditText;
 
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -11,7 +10,9 @@ import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.FragmentActivity;
 
-public class RoleSelectionActivity extends FragmentActivity  {
+import com.example.meetup.login.LogInFragment;
+
+public class RoleSelectionActivity extends FragmentActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -20,7 +21,7 @@ public class RoleSelectionActivity extends FragmentActivity  {
         WindowCompat.enableEdgeToEdge(getWindow());
         View view = findViewById(R.id.role_selection_container);
 
-        if (savedInstanceState == null){
+        if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.fragment_container, new LogInFragment())
                     .commit();
@@ -29,9 +30,9 @@ public class RoleSelectionActivity extends FragmentActivity  {
         ViewCompat.setOnApplyWindowInsetsListener(
                 view,
                 (v, insetsCompat) -> {
-                    Insets systemBars = insetsCompat.getInsets(WindowInsetsCompat.Type.systemBars());
+                    Insets systemBars = insetsCompat.getInsets(WindowInsetsCompat.Type.displayCutout() | WindowInsetsCompat.Type.systemBars());
                     v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-                    return insetsCompat;
+                    return WindowInsetsCompat.CONSUMED;
                 }
         );
 

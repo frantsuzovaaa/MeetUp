@@ -22,6 +22,7 @@ import java.util.Date;
 public class AdapterEvents extends RecyclerView.Adapter<AdapterEvents.MyViewHolder> {
     Context context;
     ArrayList<Events> list;
+    ArrayList<String> eventId_list;
     private OnItemClickListener listener;
 
     public interface OnItemClickListener {
@@ -31,17 +32,26 @@ public class AdapterEvents extends RecyclerView.Adapter<AdapterEvents.MyViewHold
     public void setOnItemClickListener(OnItemClickListener listener) {
         this.listener = listener;
     }
-    public AdapterEvents(Context context, ArrayList<Events> list) {
+    public AdapterEvents(Context context, ArrayList<Events> list, ArrayList<String> list_id) {
         this.context = context;
         this.list = list;
+        this.eventId_list= list_id;
+    }
+
+    public String getEventId(int position){
+        if (eventId_list!= null && position < eventId_list.size()){
+            return eventId_list.get(position);
+        }
+        return null;
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    public void updateEvents(ArrayList<Events> newEvents) {
+    public void updateEvents(ArrayList<Events> newEvents, ArrayList<String> ids) {
         this.list.clear();
         this.list.addAll(newEvents);
+        this.eventId_list.clear();
+        this.eventId_list.addAll(ids);
         notifyDataSetChanged();
-        Log.d("DEBUG", "Adapter updated with " + newEvents.size() + " events");
     }
 
     @NonNull
@@ -58,6 +68,17 @@ public class AdapterEvents extends RecyclerView.Adapter<AdapterEvents.MyViewHold
         holder.nameEvent.setText(events.getNameEvent());
         holder.date.setText(simpleDateFormat.format(new Date(events.getDataTime())));
         Log.d("DEBUG", "Binding event: " + events.getNameEvent());
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int currentPosition = holder.getAbsoluteAdapterPosition();
+                if (currentPosition != RecyclerView.NO_POSITION) {
+                    listener.onItemClick(events, currentPosition);
+                }
+            }
+        });
+
+
     }
 
     @Override

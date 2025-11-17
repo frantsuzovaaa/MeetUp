@@ -19,6 +19,7 @@ import java.util.ArrayList;
 public class EventsFragmentViewModel extends ViewModel {
 
     private final MutableLiveData<ArrayList<Events>> _events = new MutableLiveData<>();
+    private final MutableLiveData<ArrayList<String>> _eventIds = new MutableLiveData<>();
     private DatabaseReference databaseReference;
 
     public void init() {
@@ -26,6 +27,7 @@ public class EventsFragmentViewModel extends ViewModel {
                 .getInstance("https://meetup-9708e-default-rtdb.europe-west1.firebasedatabase.app")
                 .getReference("Events");
         _events.setValue(new ArrayList<>());
+        _eventIds.setValue(new ArrayList<>());
         setupRealtimeListener();
     }
 
@@ -34,13 +36,17 @@ public class EventsFragmentViewModel extends ViewModel {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 ArrayList<Events> newEvents = new ArrayList<>();
+                ArrayList<String> newEventIds = new ArrayList<>();
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     Events event = dataSnapshot.getValue(Events.class);
+                    String eventId = dataSnapshot.getKey();
                     if (event != null) {
                         newEvents.add(event);
+                        newEventIds.add(eventId);
                     }
                 }
                 _events.setValue(newEvents);
+                _eventIds.setValue(newEventIds);
                 Log.d("DEBUG", "onDataChange: " + newEvents.size() + " events loaded");
             }
 
@@ -49,6 +55,10 @@ public class EventsFragmentViewModel extends ViewModel {
                 Log.e("DEBUG", "Database error: " + error.getMessage());
             }
         });
+    }
+
+    public LiveData<ArrayList<String>> eventIds() {
+        return _eventIds;
     }
 
     public void addEvent(Events event) {
@@ -65,6 +75,7 @@ public class EventsFragmentViewModel extends ViewModel {
             }
         }
     }
+
 
     public LiveData<ArrayList<Events>> events() {
         return _events;

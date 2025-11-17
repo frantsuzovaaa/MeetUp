@@ -51,6 +51,8 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
+    implementation("com.journeyapps:zxing-android-embedded:4.3.0")
+    implementation("com.google.zxing:core:3.4.1")
     implementation ("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.7")
     implementation ("androidx.lifecycle:lifecycle-livedata-ktx:2.8.7")
     implementation ("androidx.lifecycle:lifecycle-runtime-ktx:2.8.7")

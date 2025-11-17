@@ -1,5 +1,6 @@
 package com.example.meetup.events;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -14,6 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.meetup.databinding.FragmentEventsBinding;
+import com.example.meetup.EventInfoActivity;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
@@ -23,6 +25,8 @@ public class EventsFragment extends Fragment {
     private RecyclerView recyclerView;
     private EventsFragmentViewModel viewModel;
     private AdapterEvents adapterEvents;
+    private ArrayList<Events> cachedEvents = new ArrayList<>();
+    private ArrayList<String> cachedEventIds = new ArrayList<>();
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
@@ -37,16 +41,20 @@ public class EventsFragment extends Fragment {
         recyclerView = binding.recycleViewEvent;
 
 
-        adapterEvents = new AdapterEvents(getActivity(), new ArrayList<>());
+        adapterEvents = new AdapterEvents(getActivity(), new ArrayList<>(), new ArrayList<>());
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setAdapter(adapterEvents);
 
         viewModel = new ViewModelProvider(requireActivity()).get(EventsFragmentViewModel.class);
         viewModel.init();
 
+        viewModel.eventIds().observe(getViewLifecycleOwner(), ids -> {
+            this.cachedEventIds = ids;
+            updateAdapterIfReady();
+        });
         viewModel.events().observe(getViewLifecycleOwner(), events -> {
-            Log.d("DEBUG", "onViewCreated: new data received, size: " + events.size());
-            adapterEvents.updateEvents(events);
+            this.cachedEvents = events;
+            updateAdapterIfReady();
         });
 
         FloatingActionButton AddButton = binding.buttonAdd;
@@ -57,7 +65,10 @@ public class EventsFragment extends Fragment {
         adapterEvents.setOnItemClickListener(new AdapterEvents.OnItemClickListener() {
             @Override
             public void onItemClick(Events event, int position) {
-
+                String id = adapterEvents.getEventId(position);
+                Intent intent = new Intent(getActivity(), EventInfoActivity.class);
+                intent.putExtra("event_id", id);
+                startActivity(intent);
             }
         });
     }
@@ -66,6 +77,13 @@ public class EventsFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
+    }
+
+    private  void updateAdapterIfReady(){
+        if (!cachedEvents.isEmpty() && !cachedEventIds.isEmpty() &&
+                cachedEvents.size() == cachedEventIds.size()){
+            adapterEvents.updateEvents(cachedEvents, cachedEventIds);
+        }
     }
 
 

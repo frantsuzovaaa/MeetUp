@@ -1,6 +1,7 @@
 package com.example.meetup;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
@@ -12,18 +13,18 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.ViewModelProvider;
 
 
 import com.example.meetup.events.EventsFragment;
+import com.example.meetup.events.EventsFragmentViewModel;
 import com.example.meetup.profile.ProfileFragment;
-import com.example.meetup.statistic.StatisticFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class AccountActivity extends FragmentActivity {
     private BottomNavigationView menu;
     private View headerView;
     private static final String EVENTS_TITLE = "Мои мероприятия";
-    private static final String STATISTICS_TITLE = "Статистика";
     private static final String PROFILE_TITLE = "Мой профиль";
 
     @Override
@@ -51,7 +52,7 @@ public class AccountActivity extends FragmentActivity {
             return WindowInsetsCompat.CONSUMED;
         });
 
-        initNavMenu(new ProfileFragment(), PROFILE_TITLE);
+        initNavMenu(new EventsFragment(), EVENTS_TITLE);
         menu.setOnItemSelectedListener(menuItem -> {
             if (menuItem.getItemId() == R.id.profile) {
                 initNavMenu(new ProfileFragment(), PROFILE_TITLE);
@@ -61,14 +62,16 @@ public class AccountActivity extends FragmentActivity {
                 initNavMenu(new EventsFragment(), EVENTS_TITLE);
                 return true;
             }
-            if (menuItem.getItemId() == R.id.statistic) {
-                initNavMenu(new StatisticFragment(), STATISTICS_TITLE);
-                return true;
-            }
+
             return false;
         });
     }
-
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.d("DEBUG", "AccountActivity onResume - обновляем данные");
+        EventsFragmentViewModel viewModel = new ViewModelProvider(this).get(EventsFragmentViewModel.class);
+    }
 
     private void initNavMenu(Fragment fragment, String header_title) {
         FragmentManager fragmentManager = getSupportFragmentManager();

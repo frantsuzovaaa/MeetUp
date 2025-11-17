@@ -1,10 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".info_event">
+    android:orientation="vertical"
+    android:background="@color/main_color_background">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/headerTabs"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:background="@color/main_color_background"
+        app:tabSelectedTextColor="@color/color_hint"
+        app:tabTextColor="@color/dark_pink"
+        app:tabIndicatorColor="@color/dark_pink"
+        app:tabIconTint="@color/dark_pink">
+        <com.google.android.material.tabs.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:icon="@drawable/icon_info_event"
+            android:text="Информация">
+
+        </com.google.android.material.tabs.TabItem>
+
+        <com.google.android.material.tabs.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:icon="@drawable/members"
+            android:text="Гости">
+
+        </com.google.android.material.tabs.TabItem>
+        <com.google.android.material.tabs.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:icon="@drawable/statistic_icon"
+            android:text="Статистика">
+
+        </com.google.android.material.tabs.TabItem>
+
+    </com.google.android.material.tabs.TabLayout>
+
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/viewPager"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+</LinearLayout>

@@ -2,7 +2,6 @@ package com.example.meetup.events;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -80,8 +79,7 @@ public class EventsFragment extends Fragment {
     }
 
     private  void updateAdapterIfReady(){
-        if (!cachedEvents.isEmpty() && !cachedEventIds.isEmpty() &&
-                cachedEvents.size() == cachedEventIds.size()){
+        if (cachedEvents.size() == cachedEventIds.size()){
             adapterEvents.updateEvents(cachedEvents, cachedEventIds);
         }
     }

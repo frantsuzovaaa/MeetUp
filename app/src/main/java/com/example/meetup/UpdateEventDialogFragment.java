@@ -9,7 +9,6 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.text.format.DateUtils;
@@ -21,7 +20,6 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
-import com.example.meetup.databinding.FragmentEventInfoBinding;
 import com.example.meetup.databinding.FragmentUpdateEventDialogBinding;
 import com.example.meetup.events.Events;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -35,7 +33,6 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.EventListener;
 
 public class UpdateEventDialogFragment extends DialogFragment {
     private TextView name_event, date_event, code_word, place;
@@ -169,17 +166,21 @@ public class UpdateEventDialogFragment extends DialogFragment {
                             for (DataSnapshot eventSnapshort : snapshot.getChildren()) {
                                 String eventId = eventSnapshort.getKey();
                                 assert eventId != null;
-                                if (!eventId.equals(currentId)) {
+                                if (!eventId.equals(currentid)) {
                                     codeWordFlag = true;
                                     break;
                                 }
                             }
+
                             if (codeWordFlag) {
                                 binding.codeUpdateWord.setError("Кодовое слово уже занято.");
                                 Toast.makeText(getActivity(), "Кодовое слово уже занято", Toast.LENGTH_SHORT).show();
                             } else {
                                 updateData(currentid, currentCodeWord);
                             }
+                        }
+                        else{
+                            updateData(currentid, currentCodeWord);
                         }
                     }
 
@@ -214,9 +215,7 @@ public class UpdateEventDialogFragment extends DialogFragment {
 
                         if (task.isSuccessful()) {
                             Toast.makeText(getActivity(), "Мероприятие успешно обновлено", Toast.LENGTH_SHORT).show();
-                            if (eventUpdateListener != null) {
-                                eventUpdateListener.onEventUpdate(event);
-                            }
+                            shareViewModel.updateCurrentEvent(event);
                             dismiss();
                         } else {
                             Toast.makeText(getActivity(), "Ошибка обновления. Попробуйте снова", Toast.LENGTH_SHORT).show();

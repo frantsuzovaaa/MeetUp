@@ -6,14 +6,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.meetup.R;
-import com.example.meetup.events.Events;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -68,13 +66,11 @@ public class AdapterEvents extends RecyclerView.Adapter<AdapterEvents.MyViewHold
         holder.nameEvent.setText(events.getNameEvent());
         holder.date.setText(simpleDateFormat.format(new Date(events.getDataTime())));
         Log.d("DEBUG", "Binding event: " + events.getNameEvent());
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                int currentPosition = holder.getAbsoluteAdapterPosition();
-                if (currentPosition != RecyclerView.NO_POSITION) {
-                    listener.onItemClick(events, currentPosition);
-                }
+        holder.itemView.setOnClickListener(v -> {
+            int currentPosition = holder.getAbsoluteAdapterPosition();
+            if (currentPosition != RecyclerView.NO_POSITION) {
+                Events currentEvent = list.get(currentPosition);
+                listener.onItemClick(currentEvent, currentPosition);
             }
         });
 

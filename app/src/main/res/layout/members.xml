@@ -27,7 +27,7 @@
             android:layout_gravity="center_horizontal">
             <TextView
                 android:id="@+id/nameMember"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:textSize="24sp"
                 android:textColor="@color/dark_pink"
@@ -39,10 +39,10 @@
 
             <androidx.appcompat.widget.AppCompatImageButton
                 android:id="@+id/buttonEdit"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
                 android:padding="2dp"
-                android:src="@drawable/icon_chage_data"
+                android:src="@drawable/icon_change_data"
                 android:scaleType="fitCenter"
                 android:background="?selectableItemBackgroundBorderless"
                 app:layout_constraintTop_toTopOf="parent"
@@ -59,7 +59,7 @@
             android:layout_gravity="center_horizontal">
             <TextView
                 android:id="@+id/number"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:textSize="15sp"
                 android:textColor="@color/dark_pink"
@@ -70,8 +70,8 @@
                 app:layout_constraintBottom_toBottomOf="parent"/>
             <androidx.appcompat.widget.AppCompatImageButton
                 android:id="@+id/qr_sending"
-                android:layout_width="25dp"
-                android:layout_height="25dp"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
                 android:padding="2dp"
                 android:src="@drawable/icon_qr_code"
                 android:scaleType="fitCenter"

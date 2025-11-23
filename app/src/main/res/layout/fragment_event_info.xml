@@ -95,6 +95,7 @@
         </LinearLayout>
 
        <androidx.appcompat.widget.AppCompatButton
+           android:id="@+id/UpdateEventButton"
            android:layout_width="wrap_content"
            android:layout_height="wrap_content"
            android:background="@drawable/disign_light_button"

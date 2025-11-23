@@ -8,6 +8,7 @@
     tools:context=".MembersFragment"
     android:background="@color/main_color_background">
     <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycleViewMembers"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 

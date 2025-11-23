@@ -16,22 +16,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.meetup.databinding.FragmentEventInfoBinding;
-import com.example.meetup.databinding.FragmentEventsBinding;
-import com.example.meetup.events.EventsFragment;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
 import java.util.Date;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.concurrent.Executor;
 
 
 public class EventInfoFragment extends Fragment {
@@ -39,6 +27,7 @@ public class EventInfoFragment extends Fragment {
     private TextView name_event, date_event, code_word, place;
     private ExtendedFloatingActionButton buttonDelete;
     private EventsInfoShareViewModel shareViewModel;
+
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -49,14 +38,14 @@ public class EventInfoFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        name_event =binding.nameEventFragmentEventInfo;
+        name_event = binding.nameEventFragmentEventInfo;
         date_event = binding.dataFragmentEventInfo;
         code_word = binding.codeWordFragmentEventInfo;
         place = binding.PlaceFragmentEventInfo;
         buttonDelete = binding.buttonDeleteEvent;
         shareViewModel = new ViewModelProvider(requireActivity()).get(EventsInfoShareViewModel.class);
-        shareViewModel.getCurrentEvent().observe(getViewLifecycleOwner(),event -> {
-            if (event != null){
+        shareViewModel.getCurrentEvent().observe(getViewLifecycleOwner(), event -> {
+            if (event != null) {
                 @SuppressLint("SimpleDateFormat") SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm");
                 name_event.setText(event.getNameEvent());
                 code_word.setText(event.getCodeWord());
@@ -64,53 +53,29 @@ public class EventInfoFragment extends Fragment {
                 date_event.setText(simpleDateFormat.format(new Date(event.getDataTime())));
             }
         });
-        String currentId = shareViewModel.getCurrentEventId().getValue();
+        binding.UpdateEventButton.setOnClickListener(v -> {
+            UpdateEventDialogFragment dialogFragment = new UpdateEventDialogFragment();
+            dialogFragment.show(getParentFragmentManager(), "updateDialogFragmnet");
+        });
 
-        buttonDelete.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                String currentId = shareViewModel.getCurrentEventId().getValue();
-
-                if (currentId == null || currentId.isEmpty()) {
-                    System.out.println("ОШИБКА: currentId is null or empty");
-                    Toast.makeText(getActivity(), "Ошибка: ID события не найден", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-
-                FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance("https://meetup-9708e-default-rtdb.europe-west1.firebasedatabase.app");
-
-                DatabaseReference eventRef = firebaseDatabase.getReference("Events").child(currentId);
-
-                eventRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        if (snapshot.exists()) {
-                            eventRef.removeValue()
-                                    .addOnSuccessListener(unused -> {
-                                        Toast.makeText(getActivity(), "Мероприятие удалено", Toast.LENGTH_SHORT).show();
-                                        Intent intent = new Intent(getActivity(), AccountActivity.class);
-                                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-                                        startActivity(intent);
-
-                                        if (getActivity() != null) {
-                                            getActivity().finish();
-                                        }
-                                    })
-                                    .addOnFailureListener(e -> {
-                                        Toast.makeText(getActivity(), "Ошибка: " + e.getMessage(), Toast.LENGTH_LONG).show();
-                                    });
-                        } else {
-                            Toast.makeText(getActivity(), "Событие не найдено", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-                        Toast.makeText(getActivity(), "Ошибка чтения: " + error.getMessage(), Toast.LENGTH_LONG).show();
-                    }
-                });
+        shareViewModel.infoToShow().observe(getViewLifecycleOwner(), info -> {
+            if (info != null) {
+                Toast.makeText(getActivity(), info, Toast.LENGTH_SHORT).show();
             }
         });
+
+        shareViewModel.isNeedToFinish().observe(getViewLifecycleOwner(), isNeedToFinish -> {
+            if (isNeedToFinish) {
+                Intent intent = new Intent(getActivity(), AccountActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                startActivity(intent);
+
+                if (getActivity() != null) {
+                    getActivity().finish();
+                }
+            }
+        });
+
+        buttonDelete.setOnClickListener(v -> shareViewModel.deleteCurrentEvent());
     }
 }

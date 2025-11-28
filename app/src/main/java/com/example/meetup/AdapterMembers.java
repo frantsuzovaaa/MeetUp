@@ -18,8 +18,8 @@ public class AdapterMembers extends RecyclerView.Adapter<AdapterMembers.MyViewHo
     ArrayList<String> list_id_member;
     Context context;
     private OnItemClickListener listener;
-    private  OnChangesClickListener changesClickListener;
-    private  OnOpenQrClickListener onOpenQrClickListener;
+    private OnChangesClickListener changesClickListener;
+    private OnOpenQrClickListener onOpenQrClickListener;
 
     public interface OnItemClickListener {
         void onItemClick(Member member, int position);
@@ -28,6 +28,7 @@ public class AdapterMembers extends RecyclerView.Adapter<AdapterMembers.MyViewHo
     public void setOnItemClickListener(OnItemClickListener listener) {
         this.listener = listener;
     }
+
     public interface OnChangesClickListener {
         void onChangesClick(Member member, int position);
     }
@@ -37,6 +38,7 @@ public class AdapterMembers extends RecyclerView.Adapter<AdapterMembers.MyViewHo
     }
 
     public interface OnOpenQrClickListener {
+        void onOpenQrClick(Member member, int position); // ← ДОБАВИЛ метод
     }
 
     public void setOnOpenQrClickListener(OnOpenQrClickListener listener) {
@@ -58,8 +60,8 @@ public class AdapterMembers extends RecyclerView.Adapter<AdapterMembers.MyViewHo
         notifyDataSetChanged();
     }
 
-    public String getMemberId(int position){
-        if (list_id_member!=null && position < list_id_member.size()){
+    public String getMemberId(int position) {
+        if (list_id_member != null && position < list_id_member.size()) {
             return list_id_member.get(position);
         }
         return null;
@@ -88,12 +90,15 @@ public class AdapterMembers extends RecyclerView.Adapter<AdapterMembers.MyViewHo
 
         holder.bntChanges.setOnClickListener(v -> {
             int currentPosition = holder.getAbsoluteAdapterPosition();
+            if (currentPosition != RecyclerView.NO_POSITION && changesClickListener != null) {
                 changesClickListener.onChangesClick(member, currentPosition);
             }
         });
 
         holder.btnQR.setOnClickListener(v -> {
             int currentPosition = holder.getAbsoluteAdapterPosition();
+            if (currentPosition != RecyclerView.NO_POSITION && onOpenQrClickListener != null) {
+                onOpenQrClickListener.onOpenQrClick(member, currentPosition);
             }
         });
     }
@@ -114,7 +119,6 @@ public class AdapterMembers extends RecyclerView.Adapter<AdapterMembers.MyViewHo
 
             bntChanges = itemView.findViewById(R.id.buttonEdit);
             btnQR = itemView.findViewById(R.id.qr_sending);
-
         }
     }
 }

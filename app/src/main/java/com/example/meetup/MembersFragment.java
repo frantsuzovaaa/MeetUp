@@ -1,5 +1,6 @@
 package com.example.meetup;
 
+import android.graphics.Bitmap;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -114,13 +115,18 @@ public class MembersFragment extends Fragment {
 
         adapterMembers.setOnOpenQrClickListener(new AdapterMembers.OnOpenQrClickListener() {
             @Override
-            public void onOpenQrClick(Member member, int position) {
+            public void onOpenQrClick(Member member, int position, String member_id) {
+                QrDialogFragment dialog = QrDialogFragment.newInstance(member, member_id);
+                dialog.show(getParentFragmentManager(),"QR_dialog");
+
             }
         });
 
 
 
     }
+
+
     private void updateAdapterIfReady() {
         if (cachedMembers.size() == cachedMemberIds.size()) {
             adapterMembers.updateMembers(cachedMembers, cachedMemberIds);

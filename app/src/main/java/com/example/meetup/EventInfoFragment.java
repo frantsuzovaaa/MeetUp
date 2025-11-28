@@ -1,6 +1,8 @@
 package com.example.meetup;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -76,6 +78,18 @@ public class EventInfoFragment extends Fragment {
             }
         });
 
-        buttonDelete.setOnClickListener(v -> shareViewModel.deleteCurrentEvent());
+        buttonDelete.setOnClickListener(v ->{
+            new AlertDialog.Builder(requireContext())
+                    .setTitle("Удаление")
+                    .setMessage("Вы уверены, что хотитет удалить мероприятие?")
+                    .setPositiveButton("Да", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            shareViewModel.deleteCurrentEvent();
+                        }
+                    }).setNegativeButton("Отмена", null)
+                    .show();
+
+        });
     }
 }

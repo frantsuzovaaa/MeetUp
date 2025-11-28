@@ -46,8 +46,8 @@ public class SignUpFragment extends Fragment {
         binding.buttonSignUp.setOnClickListener(v -> {
             String email = binding.emailSignUp.getText().toString().trim();
             String password = binding.passwordSignUp.getText().toString().trim();
-            String name = binding.nameSignUp.getText().toString().trim();
-            String lastname = binding.lastnameSignUp.getText().toString().trim();
+            String name = binding.nameSingUp.getText().toString().trim();
+            String lastname = binding.lastnameSingUp.getText().toString().trim();
             if (email.isEmpty()|| password.isEmpty() ||name.isEmpty()|| lastname.isEmpty()){
                 Toast.makeText(getActivity().getApplicationContext(), "Поля не могут быть пустыми",Toast.LENGTH_SHORT).show();
             }
@@ -63,7 +63,7 @@ public class SignUpFragment extends Fragment {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if(task.isSuccessful()){
-                            Users user = new Users(email, name, lastname);
+                            Users user = new Users(name, lastname,email);
                             firebaseDatabase.getReference()
                                     .child("Users")
                                     .child(mfirebaseAuth.getCurrentUser().getUid())

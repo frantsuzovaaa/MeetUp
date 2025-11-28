@@ -16,6 +16,7 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import com.example.meetup.AccountActivity;
+import com.example.meetup.QrScanActivity;
 import com.example.meetup.R;
 import com.example.meetup.signup.SignUpFragment;
 import com.example.meetup.databinding.FragmentLogInBinding;
@@ -45,6 +46,13 @@ public class LogInFragment extends Fragment {
         Button signUpButton = binding.buttonSignUp;
         Button logInButton = binding.buttonLogIn;
         mFirebaseAuth = FirebaseAuth.getInstance();
+
+        scannerButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(getActivity(), QrScanActivity.class));
+            }
+        });
 
         signUpButton.setOnClickListener(v -> {
             SignUpFragment registerFragment = new SignUpFragment();
@@ -83,10 +91,6 @@ public class LogInFragment extends Fragment {
             }
         });
 
-
-        scannerButton.setOnClickListener(v ->
-                Log.d("DEBUG", "onCreate: clicked on button scanner")
-        );
     }
     private boolean validateEmail() {
 

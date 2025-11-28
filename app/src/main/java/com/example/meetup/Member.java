@@ -1,6 +1,8 @@
 package com.example.meetup;
 
-public class Member {
+import java.io.Serializable;
+
+public class Member  implements Serializable {
     private String name;
     private String number;
     private String eventId;

@@ -1,5 +1,8 @@
 package com.example.meetup;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -8,6 +11,7 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.example.meetup.events.Events;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -57,9 +61,6 @@ public class EventsInfoShareViewModel extends ViewModel {
             return;
         }
 
-
-        // короче сначала удаляем members от события
-
         DatabaseReference membersRef = FirebaseDatabase
                 .getInstance("https://meetup-9708e-default-rtdb.europe-west1.firebasedatabase.app")
                 .getReference("Members");
@@ -75,8 +76,6 @@ public class EventsInfoShareViewModel extends ViewModel {
                 }
                 Log.d("DEBUG", "Deleted " + snapshot.getChildrenCount() + " members for event: " + currentId);
 
-                // когда удалились все мемберы (причем успешно)
-                // мы удаляем само событие
                 deleteEvent(currentId);
             }
 

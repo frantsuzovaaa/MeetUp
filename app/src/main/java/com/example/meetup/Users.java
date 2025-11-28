@@ -1,18 +1,23 @@
 package com.example.meetup;
 
 public class Users {
-    private String name, last_name, email;
+    private String email;
+    private String firstName;
+    private String lastName;
 
-
-    public Users(){
-
-    }
+    public Users() {}
     public Users(String name, String last_name, String email){
-        this.name = name;
-        this.last_name = last_name;
+        this.firstName = name;
+        this.lastName = last_name;
         this.email = email;
     }
+
+
     public String getEmail() { return email; }
-    public String getFirstName() { return name; }
-    public String getLastName() { return last_name; }
+    public String getFirstName() { return firstName; }
+    public String getLastName() { return lastName; }
+
+    public void setEmail(String email) { this.email = email; }
+    public void setFirstName(String firstName) { this.firstName = firstName; }
+    public void setLastName(String lastName) { this.lastName = lastName; }
 }

@@ -37,7 +37,7 @@ public class AdapterMembers extends RecyclerView.Adapter<AdapterMembers.MyViewHo
     }
 
     public interface OnOpenQrClickListener {
-        void onOpenQrClick(Member member, int position);
+        void onOpenQrClick(Member member, int position, String id_member);
     }
 
     public void setOnOpenQrClickListener(OnOpenQrClickListener listener) {
@@ -89,15 +89,16 @@ public class AdapterMembers extends RecyclerView.Adapter<AdapterMembers.MyViewHo
 
         holder.bntChanges.setOnClickListener(v -> {
             int currentPosition = holder.getAbsoluteAdapterPosition();
-            if (currentPosition != RecyclerView.NO_POSITION && listener != null) {
+            if (currentPosition != RecyclerView.NO_POSITION && changesClickListener != null) {
                 changesClickListener.onChangesClick(member, currentPosition);
             }
         });
 
         holder.btnQR.setOnClickListener(v -> {
             int currentPosition = holder.getAbsoluteAdapterPosition();
-            if (currentPosition != RecyclerView.NO_POSITION && listener != null) {
-                onOpenQrClickListener.onOpenQrClick(member, currentPosition);
+            if (currentPosition != RecyclerView.NO_POSITION && onOpenQrClickListener != null) {
+                String id_member = list_id_member.get(position);
+                onOpenQrClickListener.onOpenQrClick(member, currentPosition,id_member);
             }
         });
     }

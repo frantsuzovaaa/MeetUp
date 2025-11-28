@@ -13,13 +13,29 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.MeetUp.Launch">
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="com.example.meetup.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+
+        <activity
+            android:name="com.journeyapps.barcodescanner.CaptureActivity"
+            android:screenOrientation="portrait"
+            tools:replace="screenOrientation" />
+
+        <activity
+            android:name=".QrScanActivity"
+            android:exported="false" />
         <activity
             android:name=".EventInfoActivity"
             android:exported="false"
             android:screenOrientation="portrait"/>
-        <activity
-            android:name=".ScannerActivity"
-            android:exported="false" />
 
         <meta-data
             android:name="com.google.mlkit.vision.DEPENDENCIES"
@@ -32,7 +48,12 @@
         <activity
             android:name=".SplashActivity"
             android:exported="true"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
         <activity
             android:name=".RoleSelectionActivity"
             android:exported="false"
@@ -40,13 +61,7 @@
         <activity
             android:name=".AccountActivity"
             android:exported="true"
-            android:screenOrientation="portrait">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+            android:screenOrientation="portrait" />
 
     </application>
 

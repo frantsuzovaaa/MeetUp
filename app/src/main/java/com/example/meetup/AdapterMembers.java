@@ -38,7 +38,7 @@ public class AdapterMembers extends RecyclerView.Adapter<AdapterMembers.MyViewHo
     }
 
     public interface OnOpenQrClickListener {
-        void onOpenQrClick(Member member, int position); // ← ДОБАВИЛ метод
+        void onOpenQrClick(Member member, int position, String memberId);
     }
 
     public void setOnOpenQrClickListener(OnOpenQrClickListener listener) {
@@ -77,6 +77,7 @@ public class AdapterMembers extends RecyclerView.Adapter<AdapterMembers.MyViewHo
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         Member member = list.get(position);
+        String memberId = list_id_member.get(position);
 
         holder.name.setText(member.getName());
         holder.number.setText(member.getNumber());
@@ -98,7 +99,7 @@ public class AdapterMembers extends RecyclerView.Adapter<AdapterMembers.MyViewHo
         holder.btnQR.setOnClickListener(v -> {
             int currentPosition = holder.getAbsoluteAdapterPosition();
             if (currentPosition != RecyclerView.NO_POSITION && onOpenQrClickListener != null) {
-                onOpenQrClickListener.onOpenQrClick(member, currentPosition);
+                onOpenQrClickListener.onOpenQrClick(member, currentPosition, memberId);
             }
         });
     }

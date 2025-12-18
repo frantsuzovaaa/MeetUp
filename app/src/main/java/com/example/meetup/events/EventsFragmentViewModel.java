@@ -7,6 +7,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -23,7 +24,7 @@ public class EventsFragmentViewModel extends ViewModel {
 
     public void init() {
         databaseReference = FirebaseDatabase
-                .getInstance("https://meetup-9708e-default-rtdb.europe-west1.firebasedatabase.app")
+                .getInstance("https://meetup2-a8e75-default-rtdb.europe-west1.firebasedatabase.app")
                 .getReference("Events");
         _events.setValue(new ArrayList<>());
         _eventIds.setValue(new ArrayList<>());
@@ -31,29 +32,35 @@ public class EventsFragmentViewModel extends ViewModel {
     }
 
     private void setupRealtimeListener() {
-        databaseReference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                ArrayList<Events> newEvents = new ArrayList<>();
-                ArrayList<String> newEventIds = new ArrayList<>();
-                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                    Events event = dataSnapshot.getValue(Events.class);
-                    String eventId = dataSnapshot.getKey();
-                    if (event != null) {
-                        newEvents.add(event);
-                        newEventIds.add(eventId);
-                    }
-                }
-                _events.setValue(newEvents);
-                _eventIds.setValue(newEventIds);
-                Log.d("DEBUG", "onDataChange: " + newEvents.size() + " events loaded");
-            }
+        String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        databaseReference
+                .orderByChild("creatorId")
+                .equalTo(uid)
+                .addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        ArrayList<Events> newEvents = new ArrayList<>();
+                        ArrayList<String> newEventIds = new ArrayList<>();
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Log.e("DEBUG", "Database error: " + error.getMessage());
-            }
-        });
+                        for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                            Events event = dataSnapshot.getValue(Events.class);
+                            String eventId = dataSnapshot.getKey();
+                            if (event != null) {
+                                newEvents.add(event);
+                                newEventIds.add(eventId);
+                            }
+                        }
+
+                        _events.setValue(newEvents);
+                        _eventIds.setValue(newEventIds);
+                        Log.d("DEBUG", "onDataChange: " + newEvents.size() + " events loaded for uid=" + uid);
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        Log.e("DEBUG", "Database error: " + error.getMessage());
+                    }
+                });
     }
 
     public LiveData<ArrayList<String>> eventIds() {

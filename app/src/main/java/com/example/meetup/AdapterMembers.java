@@ -11,6 +11,8 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.widget.AppCompatImageButton;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.meetup.events.Events;
+
 import java.util.ArrayList;
 
 public class AdapterMembers extends RecyclerView.Adapter<AdapterMembers.MyViewHolder> {

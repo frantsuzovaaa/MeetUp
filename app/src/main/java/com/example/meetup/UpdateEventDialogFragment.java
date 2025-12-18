@@ -48,7 +48,7 @@ public class UpdateEventDialogFragment extends DialogFragment {
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         binding = FragmentUpdateEventDialogBinding.inflate(inflater, container, false);
-        firebaseDatabase = FirebaseDatabase.getInstance("https://meetup-9708e-default-rtdb.europe-west1.firebasedatabase.app");
+        firebaseDatabase = FirebaseDatabase.getInstance("https://meetup2-a8e75-default-rtdb.europe-west1.firebasedatabase.app");
         initListeners();
 
         binding.timeButton.setOnClickListener(v -> setTime());

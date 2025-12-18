@@ -4,11 +4,13 @@ import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.InputType;
+import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.CycleInterpolator;
@@ -20,6 +22,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -37,9 +40,17 @@ import com.google.firebase.database.collection.LLRBNode;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
+import java.util.Arrays;
+
 public class QrScanActivity extends AppCompatActivity {
     private static final int PERMISSION_REQUEST_CAMERA = 1;
     FirebaseDatabase firebaseDatabase;
+    String event_id;
+    private static final String PREFS_NAME = "scanner_prefs";
+    private static final String KEY_CAMERA_ID = "camera_id";
+
+    private int currentCameraId = 0;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,9 +63,17 @@ public class QrScanActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-        firebaseDatabase = FirebaseDatabase.getInstance("https://meetup-9708e-default-rtdb.europe-west1.firebasedatabase.app");
+        firebaseDatabase = FirebaseDatabase.getInstance("https://meetup2-a8e75-default-rtdb.europe-west1.firebasedatabase.app");
 
         showDialogEditText();
+
+
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                finish();
+            }
+        });
     }
     private void checkCameraPermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -68,11 +87,18 @@ public class QrScanActivity extends AppCompatActivity {
         }
     }
     private void initQRCodeScanner() {
+        SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+        currentCameraId = prefs.getInt(KEY_CAMERA_ID, 0);
+
         IntentIntegrator integrator = new IntentIntegrator(this);
         integrator.setDesiredBarcodeFormats(IntentIntegrator.QR_CODE);
         integrator.setOrientationLocked(false);
-        integrator.setBeepEnabled(false);
+        integrator.setBeepEnabled(true);
         integrator.setPrompt("Наведите камеру на QR-код");
+        integrator.setCaptureActivity(CustomScanActivity.class);
+
+        integrator.setCameraId(currentCameraId);
+
         integrator.initiateScan();
     }
 
@@ -103,29 +129,163 @@ public class QrScanActivity extends AppCompatActivity {
         }
     }
 
+
     private void showInformation(String contents) {
+        try {
+            if (contents == null || contents.trim().isEmpty()) {
+                Toast.makeText(this, "Пустой QR код", Toast.LENGTH_LONG).show();
+                initQRCodeScanner();
+                return;
+            }
+            String[] data = contents.split(":");
 
-        String[] data = contents.split(":");
-        String member_id = data[2];
-        String event_id = data[1];
-        Query query = firebaseDatabase.getReference("Events").orderByChild("codeWord").equalTo(event_id);
-
-        query.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot.exists()) {
-
-                }
+            if (data.length < 3) {
+                Toast.makeText(this, "Неверный формат QR кода", Toast.LENGTH_LONG).show();
+                initQRCodeScanner();
+                return;
             }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
+            String member_id = data[2];
+            String event_id_qr = data[1];
 
+            if (event_id == null) {
+                Toast.makeText(this, "Сначала введите кодовое слово", Toast.LENGTH_LONG).show();
+                showDialogEditText();
+                return;
             }
-        });
+
+            if (!event_id_qr.equals(event_id)) {
+                Toast.makeText(this, "QR код не для этого мероприятия", Toast.LENGTH_LONG).show();
+                initQRCodeScanner();
+                return;
+            }
+
+
+            firebaseDatabase.getReference("Members")
+                    .child(event_id_qr)
+                    .child(member_id)
+                    .addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            if (!snapshot.exists()) {
+                                Log.d("QR_DEBUG", "Участник не найден: " + member_id);
+                                Toast.makeText(QrScanActivity.this, "Участник не найден", Toast.LENGTH_LONG).show();
+                                initQRCodeScanner();
+                                return;
+                            }
+
+                            Member member = snapshot.getValue(Member.class);
+                            if (member == null) {
+                                Toast.makeText(QrScanActivity.this, "Ошибка чтения данных участника", Toast.LENGTH_LONG).show();
+                                initQRCodeScanner();
+                                return;
+                            }
+
+                            Log.d("QR_DEBUG", "Найден участник: " + member.getName());
+                            processMemberScan(member, member_id, event_id_qr);
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+                            Log.e("QR_DEBUG", "Ошибка базы данных: " + error.getMessage());
+                            Toast.makeText(QrScanActivity.this, "Ошибка поиска участника", Toast.LENGTH_LONG).show();
+                            initQRCodeScanner();
+                        }
+                    });
+
+        } catch (Exception e) {
+            Log.e("QR_DEBUG", "Ошибка обработки QR: " + e.getMessage());
+            Toast.makeText(this, "Ошибка обработки QR кода", Toast.LENGTH_LONG).show();
+            initQRCodeScanner();
+        }
+
+}
+
+private void processMemberScan(Member member, String memberId, String eventId) {
+    if (member.getMaxUsages() == 0) {
+        showDialogInformation("Проход запрещен.\nКоличество возможных посещений - 0.");
+        recordScanHistory(member, memberId, eventId, false);
+    } else if (member.getMaxUsages() < 0) {
+        showDialogInformation("Проход разрешен.\nКоличество возможных посещений неограничено");
+        recordScanHistory(member, memberId, eventId, true);
+    } else if (member.getMaxUsages() > 0) {
+        int newMaxUsages = member.getMaxUsages() - 1;
+
+        firebaseDatabase.getReference("Members")
+                .child(eventId)
+                .child(memberId)
+                .child("maxUsages")
+                .setValue(newMaxUsages)
+                .addOnSuccessListener(aVoid -> {
+                    String message = "✅ Проход разрешен!\nОсталось посещений: " + newMaxUsages;
+                    showDialogInformation(message);
+                    recordScanHistory(member, memberId, eventId, true);
+                })
+                .addOnFailureListener(e -> {
+                    showDialogInformation("❌ Ошибка обновления данных");
+                    recordScanHistory(member, memberId, eventId, false);
+                });
+    }
+}
+
+    private void recordScanHistory(Member member, String memberId, String eventIdQr, boolean b) {
+        ScanRecord scanRecord = new ScanRecord(
+                eventIdQr,
+                memberId,
+                member.getMaxUsages(), b);
+
+
+        firebaseDatabase.getReference("ScanHistory")
+                .child(eventIdQr)
+                .push()
+                .setValue(scanRecord)
+                .addOnSuccessListener(aVoid -> {
+                    Log.d("Scan", "Запись сохранена в историю");
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("Scan", "Ошибка записи истории: " + e.getMessage());
+                });
     }
 
-    private void showDialogEditText() {
+    private void showDialogInformation(String message){
+    LinearLayout layout = new LinearLayout(this);
+    layout.setOrientation(LinearLayout.VERTICAL);
+    layout.setPadding(50, 20, 50, 10);
+
+    int color = getResources().getColor(R.color.dark_pink);
+    TextView messageText = new TextView(this);
+    messageText.setText(message);
+    messageText.setTextColor(color);
+    messageText.setTextSize(20);
+    messageText.setPadding(0, 0, 0, 20);
+
+    layout.addView(messageText);
+
+    AlertDialog dialog = new AlertDialog.Builder(this)
+            .setView(layout)
+            .setPositiveButton("Ok", null)
+            .setCancelable(false)
+            .create();
+
+    dialog.setOnShowListener(dialogInterface -> {
+        Button positiveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
+        positiveButton.setTextColor(getResources().getColor(R.color.dark_pink));
+
+        positiveButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+                initQRCodeScanner();
+            }
+        });
+    });
+
+    dialog.show();
+
+
+}
+
+private void showDialogEditText() {
         LinearLayout layout = new LinearLayout(this);
         layout.setOrientation(LinearLayout.VERTICAL);
         layout.setPadding(50, 20, 50, 10);
@@ -133,20 +293,19 @@ public class QrScanActivity extends AppCompatActivity {
         int color = getResources().getColor(R.color.dark_pink);
         TextView messageText = new TextView(this);
         messageText.setText("Введите кодовое слово для подтверждения:");
-        messageText.setTextColor(color);
-        messageText.setTextSize(16);
+        messageText.setTextSize(20);
         messageText.setPadding(0, 0, 0, 20);
 
         final EditText input = new EditText(this);
         input.setInputType(InputType.TYPE_CLASS_TEXT);
         input.setHint("Введите кодовое слово");
         input.setTextColor(color);
-        input.setHintTextColor(color);
+        input.setHintTextColor(getResources().getColor(R.color.color_hint));
         input.setBackgroundResource(R.drawable.edittext_normal);
 
         final TextView errorText = new TextView(this);
         errorText.setTextColor(Color.RED);
-        errorText.setTextSize(12);
+        errorText.setTextSize(16);
         errorText.setVisibility(View.GONE);
         errorText.setPadding(10, 5, 0, 0);
         layout.addView(messageText);
@@ -163,6 +322,8 @@ public class QrScanActivity extends AppCompatActivity {
         dialog.setOnShowListener(dialogInterface -> {
             Button positiveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
             Button negativeButton = dialog.getButton(AlertDialog.BUTTON_NEGATIVE);
+            positiveButton.setTextColor(getResources().getColor(R.color.dark_pink));
+            negativeButton.setTextColor(getResources().getColor(R.color.dark_pink));
 
             positiveButton.setOnClickListener(v -> {
                 String userText = input.getText().toString().trim();
@@ -179,6 +340,11 @@ public class QrScanActivity extends AppCompatActivity {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot snapshot) {
                                 if (snapshot.exists()) {
+                                    for (DataSnapshot eventSnapshot : snapshot.getChildren()) {
+                                        event_id = eventSnapshot.getKey(); // ← ВОТ ТУТ ИСПРАВИТЬ!
+                                        Log.d("QR_DEBUG", "Найден event_id: " + event_id);
+                                        break;
+                                    }
                                     hideError(input, errorText);
                                     processSuccess();
                                     dialog.dismiss();
@@ -232,3 +398,4 @@ public class QrScanActivity extends AppCompatActivity {
         Toast.makeText(this, "✅ Доступ разрешен!", Toast.LENGTH_LONG).show();
     }
 }
+

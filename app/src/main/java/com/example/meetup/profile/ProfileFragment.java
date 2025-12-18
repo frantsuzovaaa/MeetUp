@@ -10,9 +10,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.meetup.R;
@@ -51,7 +54,7 @@ public class ProfileFragment extends Fragment {
         binding.btnSign.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new AlertDialog.Builder(requireContext())
+                AlertDialog dialog = new AlertDialog.Builder(requireContext())
                         .setTitle("Выход")
                         .setMessage("Вы уверены, что выйти?")
                         .setPositiveButton("Да", new DialogInterface.OnClickListener() {
@@ -64,14 +67,26 @@ public class ProfileFragment extends Fragment {
                                 requireActivity().finish();
 
                             }
-                        }).setNegativeButton("Отмена", null).show();
+                        }).setNegativeButton("Отмена", null).create();
+                dialog.setOnShowListener(d -> {
+                    Button positive = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
+                    Button negative = dialog.getButton(AlertDialog.BUTTON_NEGATIVE);
+
+                    positive.setTextColor(getResources().getColor(R.color.dark_pink));
+                    negative.setTextColor(getResources().getColor(R.color.dark_pink));
+
+                });
+
+                dialog.show();
+
             }
         });
 
     }
 
+
     private void loadData(String idUser) {
-        firebaseDatabase = FirebaseDatabase.getInstance("https://meetup-9708e-default-rtdb.europe-west1.firebasedatabase.app");
+        firebaseDatabase = FirebaseDatabase.getInstance("https://meetup2-a8e75-default-rtdb.europe-west1.firebasedatabase.app");
         firebaseDatabase.getReference("Users").child(idUser).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {

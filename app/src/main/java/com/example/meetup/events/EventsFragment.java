@@ -61,6 +61,8 @@ public class EventsFragment extends Fragment {
             AddEventsDialogFragment dialogFragment = new AddEventsDialogFragment();
             dialogFragment.show(getParentFragmentManager(), "addEventDialog");
         });
+
+
         adapterEvents.setOnItemClickListener(new AdapterEvents.OnItemClickListener() {
             @Override
             public void onItemClick(Events event, int position) {

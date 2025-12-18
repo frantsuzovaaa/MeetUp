@@ -10,7 +10,7 @@ android {
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.example.meetup"
+        applicationId = "com.example.meetup2"
         minSdk = 24
         targetSdk = 36
         versionCode = 1
@@ -51,6 +51,10 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
+    implementation("androidx.credentials:credentials:1.5.0")
+    implementation("androidx.credentials:credentials-play-services-auth:1.5.0")
+    implementation("com.google.android.gms:play-services-auth:21.2.0")
+    implementation("com.google.android.libraries.identity.googleid:googleid:1.1.1")
     implementation("com.google.android.gms:play-services-vision:20.1.3")
     implementation("com.journeyapps:zxing-android-embedded:4.3.0")
     implementation("com.google.zxing:core:3.4.1")
@@ -64,4 +68,20 @@ dependencies {
     implementation("com.google.firebase:firebase-database:22.0.1")
     implementation(platform("com.google.firebase:firebase-bom:34.4.0"))
     implementation("com.google.firebase:firebase-analytics")
+}
+tasks.register<Exec>("printSha1") {
+    val keystore = "${System.getProperty("user.home")}/.android/debug.keystore"
+    val storepass = "android"
+    val keypass = "android"
+    val alias = "androiddebugkey"
+
+    commandLine(
+        "keytool",
+        "-list",
+        "-v",
+        "-keystore", keystore,
+        "-storepass", storepass,
+        "-keypass", keypass,
+        "-alias", alias
+    )
 }

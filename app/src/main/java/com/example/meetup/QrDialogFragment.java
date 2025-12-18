@@ -1,5 +1,6 @@
 package com.example.meetup;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -9,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 
 import android.os.Parcelable;
 import android.view.LayoutInflater;
@@ -18,16 +20,21 @@ import android.widget.Toast;
 
 import com.example.meetup.databinding.FragmentMembersBinding;
 import com.example.meetup.databinding.FragmentQrDialogBinding;
+import com.example.meetup.events.Events;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class QrDialogFragment extends DialogFragment {
     private FragmentQrDialogBinding binding;
     private Bitmap qrCode;
+    EventsInfoShareViewModel shareViewModel;
     private static final String ARG_MEMBER = "member";
     private static final String ARG_MEMBER_ID = "member_id";
+
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -48,13 +55,15 @@ public class QrDialogFragment extends DialogFragment {
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        shareViewModel = new ViewModelProvider(requireActivity()).get(EventsInfoShareViewModel.class);
 
+        String current_event_id = shareViewModel.getCurrentEventId().getValue();
         Member member = (Member) getArguments().getSerializable(ARG_MEMBER);
         String memberId = getArguments().getString(ARG_MEMBER_ID);
 
 
         if (member != null) {
-            qrCode = MyQrGeneration.generateQR(member, memberId);
+            qrCode = MyQrGeneration.generateQR( requireContext(),member, memberId, current_event_id);
             binding.qrImage.setImageBitmap(qrCode);
             binding.memberName.setText(member.getName());
 
@@ -75,14 +84,21 @@ public class QrDialogFragment extends DialogFragment {
                     Uri contentUri = FileProvider.getUriForFile(
                             requireContext(),
                             requireContext().getPackageName() + ".fileprovider", file);
+                    shareViewModel.getCurrentEvent().observe(getViewLifecycleOwner(), event -> {
+                        @SuppressLint("SimpleDateFormat") SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm");
+                        Intent shareIntent = new Intent(Intent.ACTION_SEND);
+                        shareIntent.setType("image/png");
+                        shareIntent.putExtra(Intent.EXTRA_STREAM, contentUri);
+                        shareIntent.putExtra(Intent.EXTRA_TEXT, "Тебя приглашают на мероприятие!\nНазвание: "+event.getNameEvent()
+                                +"\nМесто: "+event.getPlace()
+                                +"\nДата и время: "+ simpleDateFormat.format(new Date(event.getDataTime())).toString()
+                                +"\nИмя: "+ member.getName());
+                        shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                        startActivity(Intent.createChooser(shareIntent, "Поделиться QR-кодом"));
+                    });
 
-                    Intent shareIntent = new Intent(Intent.ACTION_SEND);
-                    shareIntent.setType("image/png");
-                    shareIntent.putExtra(Intent.EXTRA_STREAM, contentUri);
-                    shareIntent.putExtra(Intent.EXTRA_TEXT, "QR-код участника: " + member.getName());
-                    shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 
-                    startActivity(Intent.createChooser(shareIntent, "Поделиться QR-кодом"));
+
 
                 }
                 catch (Exception e) {

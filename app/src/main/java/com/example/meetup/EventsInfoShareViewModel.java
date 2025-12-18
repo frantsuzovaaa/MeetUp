@@ -62,7 +62,7 @@ public class EventsInfoShareViewModel extends ViewModel {
         }
 
         DatabaseReference membersRef = FirebaseDatabase
-                .getInstance("https://meetup-9708e-default-rtdb.europe-west1.firebasedatabase.app")
+                .getInstance("https://meetup2-a8e75-default-rtdb.europe-west1.firebasedatabase.app")
                 .getReference("Members");
 
         Query query = membersRef.orderByChild("eventId").equalTo(currentId);
@@ -90,7 +90,7 @@ public class EventsInfoShareViewModel extends ViewModel {
     }
 
     private void deleteEvent(String eventId) {
-        FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance("https://meetup-9708e-default-rtdb.europe-west1.firebasedatabase.app");
+        FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance("https://meetup2-a8e75-default-rtdb.europe-west1.firebasedatabase.app");
 
         DatabaseReference eventRef = firebaseDatabase.getReference("Events").child(eventId);
 

@@ -160,7 +160,7 @@ public class AddMembersDialogFragment extends DialogFragment {
             Toast.makeText(getActivity(), "Ошибка: не удалось выбрать тип приглашения", Toast.LENGTH_SHORT).show();
             return;
         }
-        Member member = new Member(name, number, event_id, max_useges);
+        Member member = new Member(name, number, max_useges);
         if (memberAddedListener != null) {
             memberAddedListener.onMemberAdded(member);
             dismiss();

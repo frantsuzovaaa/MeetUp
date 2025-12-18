@@ -47,7 +47,7 @@ public class AddEventsDialogFragment extends DialogFragment {
 
         initListeners();
         setInitialDateTime();
-        firebaseDatabase = FirebaseDatabase.getInstance("https://meetup-9708e-default-rtdb.europe-west1.firebasedatabase.app");
+        firebaseDatabase = FirebaseDatabase.getInstance("https://meetup2-a8e75-default-rtdb.europe-west1.firebasedatabase.app");
 
 
         binding.timeButton.setOnClickListener(v -> setTime());
@@ -112,11 +112,19 @@ public class AddEventsDialogFragment extends DialogFragment {
             binding.codeWord.setError(null);
             binding.addEventButton.setEnabled(false);
             binding.codeWord.setBackgroundTintList(null);
-            String codeWord = binding.codeWord.getText().toString();
+            String codeWord = binding.codeWord.getText().toString().trim();
             if (binding.nameEvent.getText().toString().isEmpty()
                     || binding.place.getText().toString().isEmpty()
                     || binding.codeWord.getText().toString().isEmpty()){
                 Toast.makeText(getActivity(), "Поля не могут быть пустыми",Toast.LENGTH_SHORT).show();
+                binding.addEventButton.setEnabled(true);
+                return;
+            }
+            long currentTime = System.currentTimeMillis();
+            long selectedTime = dateAndTime.getTimeInMillis();
+
+            if (selectedTime <= currentTime) {
+                Toast.makeText(getActivity(),"Дата недоступна, так как она прошла. Выберите другую", Toast.LENGTH_SHORT).show();
                 binding.addEventButton.setEnabled(true);
                 return;
             }
@@ -148,8 +156,8 @@ public class AddEventsDialogFragment extends DialogFragment {
     }
 
     private void saveData(String codeWord){
-            String nameEvent = binding.nameEvent.getText().toString();
-            String place = binding.place.getText().toString();
+            String nameEvent = binding.nameEvent.getText().toString().trim();
+            String place = binding.place.getText().toString().trim();
             long dataTime = dateAndTime.getTimeInMillis();
             String eventId = firebaseDatabase.getReference().push().getKey();
             String creatorId = FirebaseAuth.getInstance().getCurrentUser().getUid();

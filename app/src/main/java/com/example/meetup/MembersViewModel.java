@@ -29,7 +29,7 @@ public class MembersViewModel extends ViewModel {
 
     public void init() {
         databaseReference = FirebaseDatabase
-                .getInstance("https://meetup-9708e-default-rtdb.europe-west1.firebasedatabase.app")
+                .getInstance("https://meetup2-a8e75-default-rtdb.europe-west1.firebasedatabase.app")
                 .getReference("Members");
         _members.setValue(new ArrayList<>());
         _memberIds.setValue(new ArrayList<>());
@@ -56,7 +56,7 @@ public class MembersViewModel extends ViewModel {
 
     private void setupRealtimeListenerForEvent(String eventId) {
 
-        Query query = databaseReference.orderByChild("eventId").equalTo(eventId);
+        Query query = databaseReference.child(eventId);
 
         currentEventListener = new ValueEventListener() {
             @Override
@@ -71,7 +71,7 @@ public class MembersViewModel extends ViewModel {
                     String memberId = dataSnapshot.getKey();
 
                     if (member != null) {
-                        Log.d("DEBUG", "Found member: " + member.getName() + " with event_id: " + member.getEventId());
+                        Log.d("DEBUG", "Found member: " + member.getName());
                         newMembers.add(member);
                         newMemberIds.add(memberId);
                     }
@@ -105,11 +105,9 @@ public class MembersViewModel extends ViewModel {
         _errorMessage.setValue(null);
         _memberAddedSuccess.setValue(false);
 
-        Query query = databaseReference
-                .orderByChild("event_id")
-                .equalTo(member.getEventId());
+        DatabaseReference eventMembersRef = databaseReference.child(currentEventId);
 
-        query.addListenerForSingleValueEvent(new ValueEventListener() {
+        eventMembersRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 boolean phoneExists = false;
@@ -127,7 +125,7 @@ public class MembersViewModel extends ViewModel {
                     _errorMessage.setValue("Этот номер телефона уже зарегистрирован для данного мероприятия");
                     Log.e("DEBUG", "Phone number already exists: " + member.getNumber());
                 } else {
-                    addMemberToFirebase(member);
+                    addMemberToFirebase(eventMembersRef,member);
                 }
             }
 
@@ -140,28 +138,41 @@ public class MembersViewModel extends ViewModel {
         });
     }
 
-    private void addMemberToFirebase(Member member) {
-        _isLoading.setValue(true);
-
-        String key = databaseReference.push().getKey();
+    private void addMemberToFirebase(DatabaseReference eventMembersRef, Member member) {
+        String key = eventMembersRef.push().getKey();
         if (key != null) {
-            databaseReference.child(key).setValue(member)
+            eventMembersRef.child(key).setValue(member)
                     .addOnSuccessListener(aVoid -> {
                         _isLoading.setValue(false);
                         _memberAddedSuccess.setValue(true);
-                        Log.d("DEBUG", "Member added successfully: " + member.getName());
                     })
                     .addOnFailureListener(e -> {
                         _isLoading.setValue(false);
                         _errorMessage.setValue("Ошибка сохранения: " + e.getMessage());
-                        Log.e("DEBUG", "Failed to add member: " + e.getMessage());
                     });
         } else {
             _isLoading.setValue(false);
             _errorMessage.setValue("Ошибка генерации ID участника");
         }
     }
+    public void updateMember(String memberId, Member updatedMember) {
+        if (currentEventId == null || currentEventId.isEmpty()) {
+            _errorMessage.setValue("Сначала выберите мероприятие");
+            return;
+        }
 
+        DatabaseReference eventMembersRef = databaseReference.child(currentEventId);
+
+        _isLoading.setValue(true);
+        _errorMessage.setValue(null);
+
+        eventMembersRef.child(memberId).setValue(updatedMember)
+                .addOnSuccessListener(aVoid -> _isLoading.setValue(false))
+                .addOnFailureListener(e -> {
+                    _isLoading.setValue(false);
+                    _errorMessage.setValue("Ошибка обновления участника: " + e.getMessage());
+                });
+    }
     public LiveData<ArrayList<Member>> getMembers() {
         return _members;
     }

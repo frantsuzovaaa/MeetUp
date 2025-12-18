@@ -7,6 +7,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,17 +16,27 @@ import android.widget.Toast;
 import com.example.meetup.AccountActivity;
 import com.example.meetup.Users;
 import com.example.meetup.databinding.FragmentSignUpBinding;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.database.FirebaseDatabase;
 
 public class SignUpFragment extends Fragment {
 
     FirebaseAuth mfirebaseAuth;
+    private static final int RC_SIGN_IN = 9001;
     FirebaseDatabase firebaseDatabase;
     private FragmentSignUpBinding binding;
+
 
 
     public SignUpFragment() {}
@@ -42,7 +53,7 @@ public class SignUpFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         mfirebaseAuth = FirebaseAuth.getInstance();
-        firebaseDatabase = FirebaseDatabase.getInstance("https://meetup-9708e-default-rtdb.europe-west1.firebasedatabase.app");
+        firebaseDatabase = FirebaseDatabase.getInstance("https://meetup2-a8e75-default-rtdb.europe-west1.firebasedatabase.app");
         binding.buttonSignUp.setOnClickListener(v -> {
             String email = binding.emailSignUp.getText().toString().trim();
             String password = binding.passwordSignUp.getText().toString().trim();
@@ -72,6 +83,7 @@ public class SignUpFragment extends Fragment {
                                         @Override
                                         public void onComplete(@NonNull Task<Void> task) {
                                             if (task.isSuccessful()){
+                                                Toast.makeText(requireContext(), "Регистрация выполнена!", Toast.LENGTH_SHORT).show();
                                                 startActivity(new Intent(getActivity(), AccountActivity.class));
                                                 requireActivity().finish();
                                             }
@@ -93,6 +105,7 @@ public class SignUpFragment extends Fragment {
         });
 
     }
+
 
     private boolean validateEmail() {
 
@@ -117,7 +130,7 @@ public class SignUpFragment extends Fragment {
             binding.passwordSignUp.setError("Введите пароль");
             return false;
         } else if (passwordInput.length() < 6) {
-            binding.passwordSignUp.setError("Length of password must be 6 characters or more");
+            binding.passwordSignUp.setError("Длина пароля должна быть больше 6");
             return false;
         } else {
             binding.passwordSignUp.setError("");

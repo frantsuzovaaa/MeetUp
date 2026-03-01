@@ -27,7 +27,7 @@
         </provider>
 
         <activity
-            android:name=".CustomScanActivity"
+            android:name=".scanner.ui.CustomScanActivity"
             android:screenOrientation="portrait" />
 
         <activity
@@ -36,10 +36,10 @@
             tools:replace="android:screenOrientation"/>
 
         <activity
-            android:name=".QrScanActivity"
+            android:name=".scanner.ui.QrScanActivity"
             android:exported="false" />
         <activity
-            android:name=".EventInfoActivity"
+            android:name=".events.ui.EventInfoActivity"
             android:exported="false"
             android:screenOrientation="portrait"/>
 
@@ -52,7 +52,7 @@
             android:value="true" />
 
         <activity
-            android:name=".SplashActivity"
+            android:name=".app.ui.SplashActivity"
             android:exported="true"
             android:screenOrientation="portrait">
             <intent-filter>
@@ -61,11 +61,11 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".RoleSelectionActivity"
+            android:name=".app.ui.RoleSelectionActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".AccountActivity"
+            android:name=".app.ui.AccountActivity"
             android:exported="true"
             android:screenOrientation="portrait" />
 
